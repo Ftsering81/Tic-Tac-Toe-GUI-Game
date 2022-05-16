@@ -17,6 +17,7 @@ if __name__ == "__main__":
     view = TicTacToeUI()
     player = Player(marker='X', isHuman=True)
     board = GameBoard()
+    # board.printGameBoard()
     game = TicTacToe(board, player)
     controller = TicTacToeCtrl(game, view)
     view.show()
