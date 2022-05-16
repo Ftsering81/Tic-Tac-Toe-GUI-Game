@@ -12,7 +12,8 @@ from PyQt5.QtCore import Qt
 from functools import partial
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QMessageBox
-
+import random
+import time
 
 class TicTacToeUI(QMainWindow):
     def __init__(self):
@@ -73,50 +74,135 @@ class TicTacToeUI(QMainWindow):
 
         self.rightLayout.addWidget(self.scoreBoardWidget)
         print(self.rightLayout.contentsMargins())
-        self.createPlayButton()
+        self.createnewGameButton()
         self.rightWidget.setLayout(self.rightLayout)
         self.mainLayout.addWidget(self.rightWidget)
 
 
-    def createPlayButton(self):
-        self.playButton = QPushButton("NEW GAME")
-        self.playButton.setFixedSize(100, 50)
-        self.playButton.setStyleSheet("QPushButton {background-color: red}")
-        self.rightLayout.addWidget(self.playButton, alignment=Qt.AlignCenter)
-
+    def createnewGameButton(self):
+        self.newGameButton = QPushButton("NEW GAME")
+        self.newGameButton.setFixedSize(100, 50)
+        self.newGameButton.setStyleSheet("QPushButton {background-color: red}")
+        self.rightLayout.addWidget(self.newGameButton, alignment=Qt.AlignCenter)
 
 
 
 class TicTacToeCtrl:
-    def __init__(self, view):
-        # self.model = None
+    def __init__(self, model, view):
+        self.model = model
         self._view = view
         self._connectSignals()
 
     def markX(self, selectedbtnKey):
         button = self._view.buttons[selectedbtnKey]
         if button.text() == "":
+            player = self.model.player
+            pos = [int(selectedbtnKey[0]), int(selectedbtnKey[1])]
+            print(f"pos: {pos[0], pos[1]}")
+            self.model.gameBoard.markPosition(player, pos)
+            print("printing game board after my turn")
+            self.model.gameBoard.printGameBoard()
+            self.model.gameBoard.printGameBoard()
             button.setText("X")
-            # check to see if the there are any horizontal, vertical or diagnol marks in a row for user
 
+            gameOver = self.model.checkIfWinner()
+            winner = self.model.checkWhoWon()
+            if gameOver and winner == 'X':
+                self.displayGameOverMsg("YOU WON!")
+                self.updateScoreBoard()
+                self.resetGrid()
+            elif gameOver and winner == 'O':
+                self.displayGameOverMsg("YOU LOST!")
+                self.updateScoreBoard()
+                self.resetGrid()
+            elif gameOver and winner == 'None': # draw
+                self.displayGameOverMsg("THERE WAS A DRAW!")
+                self.resetGrid()
+            else:  # game not over yet, so now computer's turn
+                self.markO()
+
+
+    def markO(self):
+        # Disable buttons for the user until computer takes its turn
+        for btnKey, btn in self._view.buttons.items():
+            btn.setEnabled(False)
+
+        # Make computer wait few secs before marking the board
+        time.sleep(0.3)
+        # Computer will randomly choose a non-marked box to mark
+        gameBoard = self.model.gameBoard
+        allButtonPos = [[0, 0], [0, 1], [0, 2], [1,0], [1, 1], [1, 2], [2, 0], [2, 1], [2,2]]
+        notMarked = True
+        while notMarked:
+            randomPos = random.choice(allButtonPos)
+            if gameBoard.grid[randomPos[0]][randomPos[1]] == "":
+                emptyPos = [randomPos[0], randomPos[1]]
+                marked = gameBoard.markPosition(self.model.computer, emptyPos) # mark that row,col in board with O
+                if marked:
+                    notMarked = False
+
+        emptyPos = [randomPos[0],  randomPos[1]]
+        print("random pos: ", emptyPos)
+        button = self._view.buttons[f"{randomPos[0]}{randomPos[1]}"]
+        button.setText('O')
+        gameBoard.printGameBoard()
+
+        gameOver = self.model.checkIfWinner()
+        winner = self.model.checkWhoWon()
+        if gameOver and winner == 'O':
+            self.displayGameOverMsg("YOU LOST!")
+            self.updateScoreBoard()
+            self.resetGrid()
+        elif gameOver and winner == 'X':
+            self.displayGameOverMsg("YOU WON!")
+            self.updateScoreBoard()
+            self.resetGrid()
+        elif gameOver and winner == 'None':  # draw
+            self.displayGameOverMsg("THERE WAS A DRAW!")
+            self.resetGrid()
+        else:  # game not over yet, so now computer's turn
+            self.model.playerTurn = True  # now player's turn
+
+            # Enable the buttons again for the user's turn, which will call markX when user clicks
+            for btnKey, btn in self._view.buttons.items():
+                btn.setEnabled(True)
+
+
+    def updateScoreBoard(self):
+        scoreBoard = self.model.scoreBoard
+        self._view.playerScore.setText(f"{scoreBoard['X']}")
+        self._view.enemyScore.setText(f"{scoreBoard['O']}")
+
+
+    def displayGameOverMsg(self, message):
+        msg = QMessageBox()
+        msg.setGeometry(300, 300, 100, 100)
+        msg.setText(message)
+        btnClicked = msg.exec_()  # shows the message
 
     def resetGrid(self):
+        self.model.gameBoard.clearBoard()
+        self.model.player.isWinner = False # reset this to false for new game
+        self.model.computer.isWinner = False  # reset this to false for new game
+        for btnKey, btn in self._view.buttons.items():
+            btn.setText("")
+            btn.setEnabled(True)  # Enable buttons for new game since user goes first
+
+    def startNewGame(self):
         msg = QMessageBox()
         msg.setGeometry(300, 300, 100, 100)
         msg.setText("STARTING A NEW GAME")
         msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         btnClicked = msg.exec_()
 
-        if btnClicked == QMessageBox.Ok: # only reset game if user says ok
-            for btnKey, btn in self._view.buttons.items():
-                btn.setText("")
-
+        if btnClicked == QMessageBox.Ok:  # only reset game if user says ok
+            self.resetGrid()
 
     def _connectSignals(self):
         for btnKey, btn in self._view.buttons.items():
             btn.clicked.connect(partial(self.markX, btnKey))
 
-        self._view.playButton.clicked.connect(self.resetGrid)
+        self._view.newGameButton.clicked.connect(self.startNewGame)
 
 
 
