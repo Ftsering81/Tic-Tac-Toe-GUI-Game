@@ -9,6 +9,10 @@ from PyQt5.QtWidgets import QFormLayout, QLineEdit
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt
+from functools import partial
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QMessageBox
+
 
 class TicTacToeUI(QMainWindow):
     def __init__(self):
@@ -27,24 +31,30 @@ class TicTacToeUI(QMainWindow):
 
     def createGrid(self):
         gridLayout = QGridLayout()
+        self.gridWidget = QWidget()
         self.buttons = {}
         for row in range(3):
             for col in range(3):
-                button = QPushButton(f"{row}{col}")
+                button = QPushButton() # f"{row}{col}"
                 # button.setFixedSize(150, 150)
                 button.setMinimumSize(150, 150)
                 button.setMaximumSize(400, 400)
+                button.setFont(QFont("Times", 100, QFont.Bold))
                 button.setStyleSheet("QPushButton {background-color: pink}")
-                button.setDisabled(True)
+                # button.setDisabled(True)
 
                 self.buttons[f"{row}{col}"] = button
                 gridLayout.addWidget(button, row, col)
                 gridLayout.setSpacing(20)
-        self.mainLayout.addLayout(gridLayout)
+        self.gridWidget.setLayout(gridLayout)
+
+        self.mainLayout.addWidget(self.gridWidget)
 
 
     def createScoreBoard(self):
         self.rightLayout = QVBoxLayout()
+        self.rightWidget = QWidget()
+
         self.scoreBoardLayout = QFormLayout()
         self.playerScore = QLineEdit()
         self.enemyScore = QLineEdit()
@@ -61,23 +71,52 @@ class TicTacToeUI(QMainWindow):
         self.scoreBoardLayout.addRow('Player O:',  self.enemyScore)
         self.scoreBoardWidget.setLayout(self.scoreBoardLayout)
 
-
         self.rightLayout.addWidget(self.scoreBoardWidget)
+        print(self.rightLayout.contentsMargins())
         self.createPlayButton()
-        self.mainLayout.addLayout(self.rightLayout)
+        self.rightWidget.setLayout(self.rightLayout)
+        self.mainLayout.addWidget(self.rightWidget)
 
 
     def createPlayButton(self):
         self.playButton = QPushButton("NEW GAME")
         self.playButton.setFixedSize(100, 50)
         self.playButton.setStyleSheet("QPushButton {background-color: red}")
-        self.rightLayout.addSpacing(10)
         self.rightLayout.addWidget(self.playButton, alignment=Qt.AlignCenter)
 
 
 
 
+class TicTacToeCtrl:
+    def __init__(self, view):
+        # self.model = None
+        self._view = view
+        self._connectSignals()
 
+    def markX(self, selectedbtnKey):
+        button = self._view.buttons[selectedbtnKey]
+        if button.text() == "":
+            button.setText("X")
+            # check to see if the there are any horizontal, vertical or diagnol marks in a row for user
+
+
+    def resetGrid(self):
+        msg = QMessageBox()
+        msg.setGeometry(300, 300, 100, 100)
+        msg.setText("STARTING A NEW GAME")
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        btnClicked = msg.exec_()
+
+        if btnClicked == QMessageBox.Ok: # only reset game if user says ok
+            for btnKey, btn in self._view.buttons.items():
+                btn.setText("")
+
+
+    def _connectSignals(self):
+        for btnKey, btn in self._view.buttons.items():
+            btn.clicked.connect(partial(self.markX, btnKey))
+
+        self._view.playButton.clicked.connect(self.resetGrid)
 
 
 
