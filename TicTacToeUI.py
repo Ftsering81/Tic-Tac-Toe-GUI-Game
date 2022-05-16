@@ -73,31 +73,47 @@ class TicTacToeUI(QMainWindow):
 
         self.rightLayout.addWidget(self.scoreBoardWidget)
         print(self.rightLayout.contentsMargins())
-        self.createPlayButton()
+        self.createnewGameButton()
         self.rightWidget.setLayout(self.rightLayout)
         self.mainLayout.addWidget(self.rightWidget)
 
 
-    def createPlayButton(self):
-        self.playButton = QPushButton("NEW GAME")
-        self.playButton.setFixedSize(100, 50)
-        self.playButton.setStyleSheet("QPushButton {background-color: red}")
-        self.rightLayout.addWidget(self.playButton, alignment=Qt.AlignCenter)
+    def createnewGameButton(self):
+        self.newGameButton = QPushButton("NEW GAME")
+        self.newGameButton.setFixedSize(100, 50)
+        self.newGameButton.setStyleSheet("QPushButton {background-color: red}")
+        self.rightLayout.addWidget(self.newGameButton, alignment=Qt.AlignCenter)
 
 
 
 
 class TicTacToeCtrl:
-    def __init__(self, view):
-        # self.model = None
+    def __init__(self, model, view):
+        self.model = model
         self._view = view
         self._connectSignals()
 
     def markX(self, selectedbtnKey):
         button = self._view.buttons[selectedbtnKey]
         if button.text() == "":
+            player = self.model.player
+            pos = [int(selectedbtnKey[0]), int(selectedbtnKey[1])]
+            self.model.gameBoard.markPosition(player.marker, pos)
+            self.model.gameBoard.printGameBoard()
             button.setText("X")
+
+            gameOver = model.checkIfWinner()
+            if gameOver and player.:
+                self.displayGameOverMsg("GAME OVER! YOU WON!")
+            else:
+                self.model.playerTurn = False # now computer's turn
             # check to see if the there are any horizontal, vertical or diagnol marks in a row for user
+
+    def displayGameOverMsg(self, message):
+        msg = QMessageBox()
+        msg.setGeometry(300, 300, 100, 100)
+        msg.setText(message)
+        btnClicked = msg.exec_() # shows the message
 
 
     def resetGrid(self):
@@ -116,7 +132,7 @@ class TicTacToeCtrl:
         for btnKey, btn in self._view.buttons.items():
             btn.clicked.connect(partial(self.markX, btnKey))
 
-        self._view.playButton.clicked.connect(self.resetGrid)
+        self._view.newGameButton.clicked.connect(self.resetGrid)
 
 
 

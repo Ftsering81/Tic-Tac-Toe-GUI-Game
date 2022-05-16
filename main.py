@@ -8,12 +8,16 @@ import PyQt5
 from PyQt5.QtWidgets import QApplication
 from TicTacToeUI import TicTacToeUI
 from TicTacToeUI import TicTacToeCtrl
+from classes import GameBoard, Player, TicTacToe
 
 if __name__ == "__main__":
     print("Hello World!")
     ticTacToe = QApplication(sys.argv)
 
     view = TicTacToeUI()
-    controller = TicTacToeCtrl(view)
+    player = Player(marker='X', isHuman=True)
+    board = GameBoard()
+    game = TicTacToe(board, player)
+    controller = TicTacToeCtrl(game, view)
     view.show()
     sys.exit(ticTacToe.exec())
