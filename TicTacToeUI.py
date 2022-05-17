@@ -2,16 +2,10 @@ import PyQt5
 import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout
-from PyQt5.QtWidgets import QGridLayout
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QFormLayout, QLineEdit
-from PyQt5.QtWidgets import QLabel
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QGridLayout, QFormLayout
+from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel
 from PyQt5.QtCore import Qt
-from functools import partial
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QMessageBox
 
 
 class TicTacToeUI(QMainWindow):
@@ -73,50 +67,16 @@ class TicTacToeUI(QMainWindow):
 
         self.rightLayout.addWidget(self.scoreBoardWidget)
         print(self.rightLayout.contentsMargins())
-        self.createPlayButton()
+        self.createnewGameButton()
         self.rightWidget.setLayout(self.rightLayout)
         self.mainLayout.addWidget(self.rightWidget)
 
 
-    def createPlayButton(self):
-        self.playButton = QPushButton("NEW GAME")
-        self.playButton.setFixedSize(100, 50)
-        self.playButton.setStyleSheet("QPushButton {background-color: red}")
-        self.rightLayout.addWidget(self.playButton, alignment=Qt.AlignCenter)
-
-
-
-
-class TicTacToeCtrl:
-    def __init__(self, view):
-        # self.model = None
-        self._view = view
-        self._connectSignals()
-
-    def markX(self, selectedbtnKey):
-        button = self._view.buttons[selectedbtnKey]
-        if button.text() == "":
-            button.setText("X")
-            # check to see if the there are any horizontal, vertical or diagnol marks in a row for user
-
-
-    def resetGrid(self):
-        msg = QMessageBox()
-        msg.setGeometry(300, 300, 100, 100)
-        msg.setText("STARTING A NEW GAME")
-        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        btnClicked = msg.exec_()
-
-        if btnClicked == QMessageBox.Ok: # only reset game if user says ok
-            for btnKey, btn in self._view.buttons.items():
-                btn.setText("")
-
-
-    def _connectSignals(self):
-        for btnKey, btn in self._view.buttons.items():
-            btn.clicked.connect(partial(self.markX, btnKey))
-
-        self._view.playButton.clicked.connect(self.resetGrid)
+    def createnewGameButton(self):
+        self.newGameButton = QPushButton("NEW GAME")
+        self.newGameButton.setFixedSize(100, 50)
+        self.newGameButton.setStyleSheet("QPushButton {background-color: red}")
+        self.rightLayout.addWidget(self.newGameButton, alignment=Qt.AlignCenter)
 
 
 
