@@ -19,3 +19,5 @@ a draw like when user wins or loses, but it seems that code is never executed. U
 updating the checkIfGameOver() of the TicTacToeCtrl class. I added code that checks if all positions in the gamebord
 is marked. If it is and it had none of the vertical, horizontal, diagnol patterns, then there is a draw and game is 
 over so it returns True which makes the TicTacToeCtrl display the "Draw" popup message .
+6. There is one instance where the game says the player won when there is a draw. This only happens when the board is 
+marked in one particular pattern. Need to fix.
