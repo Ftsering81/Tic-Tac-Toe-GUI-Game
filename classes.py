@@ -119,6 +119,8 @@ class TicTacToe:
         # If all positions in the gamebord is marked and it had none of the above patterns,
         # then there is a draw and game is over so return True.
         if len(self.gameBoard.unmarkedPositions) == 0:
+            self.player.isWinner = False
+            self.computer.isWinner = False  # fixed the bug that caused some draws to send you won message
             return True
 
         return False  # NO WINNER
