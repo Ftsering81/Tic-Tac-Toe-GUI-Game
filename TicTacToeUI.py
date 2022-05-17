@@ -85,9 +85,6 @@ class TicTacToeUI(QMainWindow):
         self.scoreBoardWidget.setLayout(self.scoreBoardLayout)
         self.scoreBoardWidget.setStyleSheet(" QLineEdit {font-size: 20pt; font-weight: bold; color: DarkGoldenRod; }")
         self.scoreBoardWidget.setFixedHeight(100)
-        self.scoreBoardWidget.setStyleSheet("Q")
-
-
 
 
         self.rightLayout.addWidget(self.scoreBoardWidget)
