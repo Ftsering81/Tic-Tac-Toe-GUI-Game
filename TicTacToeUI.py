@@ -3,9 +3,10 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QGridLayout, QFormLayout
-from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel
+from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, QToolBar
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QFrame
 
 
 class TicTacToeUI(QMainWindow):
@@ -13,17 +14,30 @@ class TicTacToeUI(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("TIC TAC TOE")
-        # self.setFixedSize(490, 700)
+        self.setFixedSize(780, 600)
         self.setGeometry(100, 100, 280, 80)
-        self.mainLayout = QHBoxLayout()
+        self.mainLayout = QVBoxLayout()
         self._centralWidget = QWidget(self)
         self._centralWidget.setLayout(self.mainLayout)
         self.setCentralWidget(self._centralWidget)
+        self.game_with_score_board = QHBoxLayout()
 
-        self.createGrid()
-        self.createScoreBoard()
+        self._createToolBar()
+        self._createTitle()
+        self._createGrid()
+        self._createScoreBoard()
 
-    def createGrid(self):
+    def _createToolBar(self):
+        tools = QToolBar()
+        self.addToolBar(tools)
+        tools.addAction("Exit", self.close)
+
+    def _createTitle(self):
+        title = QLabel("TIC TAC TOE")
+        title.setStyleSheet("QLabel {color : green; font-size: 80pt; font-weight: 80pt; font-family: Georgia}")
+        self.mainLayout.addWidget(title, alignment=Qt.AlignLeft)
+
+    def _createGrid(self):
         gridLayout = QGridLayout()
         self.gridWidget = QWidget()
         self.buttons = {}
@@ -42,13 +56,18 @@ class TicTacToeUI(QMainWindow):
                 gridLayout.setSpacing(20)
         self.gridWidget.setLayout(gridLayout)
 
-        self.mainLayout.addWidget(self.gridWidget)
+        self.game_with_score_board.addWidget(self.gridWidget)
 
 
-    def createScoreBoard(self):
+    def _createScoreBoard(self):
         self.rightLayout = QVBoxLayout()
         self.rightWidget = QWidget()
+        # self.rightWidget.setStyleSheet("QWidget {background-color: brown;}")
 
+        scoreBoardLabel = QLabel("SCOREBOARD")
+        scoreBoardLabel.setStyleSheet("QLabel {font-size: 30pt; font-family: Georgia; color: DarkGoldenRod}")
+        scoreBoardLabel.setFixedHeight(50)
+        self.rightLayout.addWidget(scoreBoardLabel)
         self.scoreBoardLayout = QFormLayout()
         self.playerScore = QLineEdit()
         self.enemyScore = QLineEdit()
@@ -64,18 +83,27 @@ class TicTacToeUI(QMainWindow):
         self.scoreBoardLayout.addRow('Player X:',  self.playerScore)
         self.scoreBoardLayout.addRow('Player O:',  self.enemyScore)
         self.scoreBoardWidget.setLayout(self.scoreBoardLayout)
+        self.scoreBoardWidget.setStyleSheet(" QLineEdit {font-size: 20pt; font-weight: bold; color: DarkGoldenRod; }")
+        self.scoreBoardWidget.setFixedHeight(100)
+        self.scoreBoardWidget.setStyleSheet("Q")
+
+
+
 
         self.rightLayout.addWidget(self.scoreBoardWidget)
-        print(self.rightLayout.contentsMargins())
-        self.createnewGameButton()
+        self._createnewGameButton()
         self.rightWidget.setLayout(self.rightLayout)
-        self.mainLayout.addWidget(self.rightWidget)
+        self.game_with_score_board.addWidget(self.rightWidget)
 
 
-    def createnewGameButton(self):
+
+        self.mainLayout.addLayout(self.game_with_score_board)
+
+    def _createnewGameButton(self):
         self.newGameButton = QPushButton("NEW GAME")
-        self.newGameButton.setFixedSize(100, 50)
-        self.newGameButton.setStyleSheet("QPushButton {background-color: red}")
+        self.newGameButton.setFixedSize(160, 80)
+        self.newGameButton.setStyleSheet("QPushButton {background-color: green; color: pink;font-size: 25pt; font-family: Georgia;}")
+        # self.rightWidget.addWidget(self.newGameButton, alignment=Qt.AlignCenter)
         self.rightLayout.addWidget(self.newGameButton, alignment=Qt.AlignCenter)
 
 
