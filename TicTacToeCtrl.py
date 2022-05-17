@@ -45,7 +45,6 @@ class TicTacToeCtrl:
             for btnKey, btn in self._view.buttons.items():
                 btn.setEnabled(True)  # Re-enable buttons for the player's turn
 
-
     def checkIfGameOver(self):
         gameOver = self._model.checkIfGameOver()
         print("GameOver: ", gameOver)
@@ -54,27 +53,25 @@ class TicTacToeCtrl:
         if gameOver and winner == 'O':
             self.displayGameOverMsg("YOU LOST!")
             self.updateScoreBoard()
-            self.resetGrid()
+            self.resetBoard()
             return True
         elif gameOver and winner == 'X':
             self.displayGameOverMsg("YOU WON!")
             self.updateScoreBoard()
-            self.resetGrid()
+            self.resetBoard()
             return True
         elif gameOver:  # draw // this evaluates to false for some reason
             self.displayGameOverMsg("THERE WAS A DRAW!")
             print("DRAW")
-            self.resetGrid()
+            self.resetBoard()
             return True
         else:
             return False
-
 
     def updateScoreBoard(self):
         scoreBoard = self._model.scoreBoard
         self._view.playerScore.setText(f"{scoreBoard['X']}")
         self._view.enemyScore.setText(f"{scoreBoard['O']}")
-
 
     def displayGameOverMsg(self, message):
         msg = QMessageBox()
@@ -82,7 +79,7 @@ class TicTacToeCtrl:
         msg.setText(message)
         btnClicked = msg.exec_()  # shows the message
 
-    def resetGrid(self):
+    def resetBoard(self):
         self._model.gameBoard.clearBoard()
         for btnKey, btn in self._view.buttons.items():
             btn.setText("")
@@ -97,7 +94,7 @@ class TicTacToeCtrl:
 
         if btnClicked == QMessageBox.Ok:  # only reset game if user says ok
             self._model.resetGame()
-            self.resetGrid() # updates the UI
+            self.resetBoard() # updates the UI
             self.updateScoreBoard()
 
     def _connectSignals(self):

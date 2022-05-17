@@ -8,6 +8,9 @@ class Player:
         self.isWinner = False
         self.mostRecentMark = [] # coordinate of board where user marked
 
+    def __str__(self):
+        return f"{self.marker}"
+
     def getPosPlayerMarked(self):
         return self.mostRecentMark
 
