@@ -20,4 +20,4 @@ I implemented my application using the MVC design pattern.
 - TicTacToeUI - This class implements the view or the UI component of the application such as creating the window 
                 and adding the widgets and layouts.
 
-- TicTacToeCtrl - This class is the Controller. It implements the communications between the view and the model.
+- TicTacToeCtrl - This class is the Controller. It implements the communications between the view(TicTacToeUI) and the model(TicTacToe).
