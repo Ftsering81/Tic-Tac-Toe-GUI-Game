@@ -7,42 +7,41 @@ class TicTacToeCtrl:
     def __init__(self, model, view):
         self._model = model
         self._view = view
+        # initialized with the 3x3 buttons bc those are the ones shown when app opens
+        self._buttons = self._view.buttons3x3
         self._connectSignals()
 
-    # Function for human player to mark 'O' on the board
+    # Function that marks 'X' on the board for human player
     def markX(self, selectedbtnKey):
-        button = self._view.buttons[selectedbtnKey]
+        button = self._buttons[selectedbtnKey]
         pos = [int(selectedbtnKey[0]), int(selectedbtnKey[1])]
-        print("markX() tapped")
         player = self._model.player
         marked = self._model.playerMark(player, pos)
         if marked:  # only show X on button if pos marked successfully
             button.setText("X")
+            button.setStyleSheet("QPushButton {background-color: pink; color: RoyalBlue}")
         else:
             print("square already marked so do nothing and return. Nothing will happen until player clicks on the buttons again.")
             return
         gameOver = self.checkIfGameOver()
         if not gameOver:  # game not over yet, so now computer's turn
-            for btnKey, btn in self._view.buttons.items():
+            for btnKey, btn in self._buttons.items():
                 btn.setEnabled(False)  # Disable buttons for the player when it's computer turn
             self.markO()
 
     # Function for computer player to mark 'O' on the board
     def markO(self):
-        # Make computer wait a lil before marking the board
-        time.sleep(0.3)
-        # Computer will randomly choose a non-marked box to mark
-        gameBoard = self._model.gameBoard
+        time.sleep(0.1)
         computer_player = self._model.computer
-        self._model.computerMark()
+        self._model.computerMark()  # Computer will randomly choose a non-marked box to mark
         pos_marked = computer_player.getPosPlayerMarked()
-        button = self._view.buttons[f"{pos_marked[0]}{pos_marked[1]}"]
+        button = self._buttons[f"{pos_marked[0]}{pos_marked[1]}"]
         button.setText('O')
-        gameBoard.printGameBoard()
+        button.setStyleSheet("QPushButton {background-color: pink; color: OrangeRed}") # make marker red for
 
         gameOver = self.checkIfGameOver()
-        if not gameOver: # game not over yet, so now player's turn
-            for btnKey, btn in self._view.buttons.items():
+        if not gameOver:  # game not over yet, so now player's turn
+            for btnKey, btn in self._buttons.items():
                 btn.setEnabled(True)  # Re-enable buttons for the player's turn
 
     def checkIfGameOver(self):
@@ -60,12 +59,11 @@ class TicTacToeCtrl:
             self.updateScoreBoard()
             self.resetBoard()
             return True
-        elif gameOver:  # draw // this evaluates to false for some reason
+        elif gameOver:  # draw
             self.displayGameOverMsg("THERE WAS A DRAW!")
-            print("DRAW")
             self.resetBoard()
             return True
-        else:
+        else:  # game not over
             return False
 
     def updateScoreBoard(self):
@@ -81,9 +79,9 @@ class TicTacToeCtrl:
 
     def resetBoard(self):
         self._model.gameBoard.clearBoard()
-        for btnKey, btn in self._view.buttons.items():
+        for btnKey, btn in self._buttons.items():
             btn.setText("")
-            btn.setEnabled(True)  # Enable buttons for new game since user goes first
+            btn.setEnabled(True)  # Enable buttons for new game in case computer won and buttons are disabled
 
     def startNewGame(self):
         msg = QMessageBox()
@@ -92,16 +90,43 @@ class TicTacToeCtrl:
         msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         btnClicked = msg.exec_()
 
-        if btnClicked == QMessageBox.Ok:  # only reset game if user says ok
+        if btnClicked == QMessageBox.Ok:  # only reset game if user clicks OK
             self._model.resetGame()
             self.resetBoard() # updates the UI
             self.updateScoreBoard()
 
+    def changeBoardDimension(self):
+        self.resetBoard()  # clear the board and the model grid before switching to the other grid
+
+        print(f"BOARD SIZE CHANGED to {self._view.boardSizeComboBox.currentText()}")
+        dimensionSelected = self._view.boardSizeComboBox.currentText()
+        num_rows = int(dimensionSelected[0])
+        num_cols = int(dimensionSelected[2])
+        # Update the gameBoard grid of _model
+        self._model.gameBoard.changeBoardSize(num_rows, num_cols)
+
+        # Now need to update the grid on the UI to reflect change in the model
+        if dimensionSelected == "4x4":
+            self._view.stackedWidget.setCurrentIndex(1) # switches to the 4x4 grid at index 1 in the stack widget
+            self._buttons = self._view.buttons4x4 # since the grid is the 4x4 grid, use the buttons part of that grid
+        else:
+            self._view.stackedWidget.setCurrentIndex(0) # swithes to the 3x3 grid at index 0 in the stack widget
+            self._buttons = self._view.buttons3x3 # since the grid is now the 3x3 grid, use the buttons part of that grid
+
+
     def _connectSignals(self):
-        for btnKey, btn in self._view.buttons.items():
+        # Connects the 3x3 grid buttons
+        for btnKey, btn in self._view.buttons3x3.items():
             btn.clicked.connect(partial(self.markX, btnKey))
 
+        # Connects the 4x4 grid buttons
+        for btnKey, btn in self._view.buttons4x4.items():
+            btn.clicked.connect(partial(self.markX, btnKey))
+
+        # Connects the New Game button
         self._view.newGameButton.clicked.connect(self.startNewGame)
 
+        # Connects the board dimension combo box
+        self._view.boardSizeComboBox.currentIndexChanged.connect(self.changeBoardDimension)
 
 
