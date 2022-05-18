@@ -21,7 +21,6 @@ class TicTacToeCtrl:
             button.setText("X")
             button.setStyleSheet("QPushButton {background-color: pink; color: RoyalBlue}")
         else:
-            print("square already marked so do nothing and return. Nothing will happen until player clicks on the buttons again.")
             return
         gameOver = self.checkIfGameOver()
         if not gameOver:  # game not over yet, so now computer's turn
@@ -46,9 +45,7 @@ class TicTacToeCtrl:
 
     def checkIfGameOver(self):
         gameOver = self._model.checkIfGameOver()
-        print("GameOver: ", gameOver)
         winner = self._model.checkWhoWon()
-        print("Winner: ", winner)
         if gameOver and winner == 'O':
             self.displayGameOverMsg("YOU LOST!")
             self.updateScoreBoard()
@@ -97,8 +94,6 @@ class TicTacToeCtrl:
 
     def changeBoardDimension(self):
         self.resetBoard()  # clear the board and the model grid before switching to the other grid
-
-        print(f"BOARD SIZE CHANGED to {self._view.boardSizeComboBox.currentText()}")
         dimensionSelected = self._view.boardSizeComboBox.currentText()
         num_rows = int(dimensionSelected[0])
         num_cols = int(dimensionSelected[2])

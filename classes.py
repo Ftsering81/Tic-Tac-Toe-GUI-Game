@@ -30,20 +30,15 @@ class GameBoard:
         for row in range(self.num_rows):
             for col in range(self.num_cols):
                 self.unmarkedPositions.append(f"{row}{col}")
-        print("unmarkedPositions after initialization", self.unmarkedPositions)
 
     def markPosition(self, player: Player, pos=[]):
-        print(f"markPosition called for {player.marker}")
         if len(self.unmarkedPositions) != 0:
             if self.grid[pos[0]][pos[1]] == "":
                 self.grid[pos[0]][pos[1]] = player.marker  # pos marked by player
-                print(f"Grid just marked {player.marker} at position {pos}")
-                self.printGameBoard()
                 self.unmarkedPositions.remove(f"{pos[0]}{pos[1]}")  # remove position from unmarkedPositions
                 player.mostRecentMark = pos
                 return True  # to signify success
             else: # pos already marked, either by player or the enemy player
-                print("Failed to mark grid {player.marker} at position {pos} bc pos taken")
                 return False
 
     # resets the board
@@ -73,20 +68,17 @@ class TicTacToe:
     def computerMark(self):
         gameBoard = self.gameBoard
         marked = False
-        print("unmarkedposition: ", self.gameBoard.unmarkedPositions)
         while not marked:
             if len(self.gameBoard.unmarkedPositions) == 0:  # no more unmarked positions
                 break
             else:
                 randomPos = random.choice(self.gameBoard.unmarkedPositions)  # randomly choose an unmarked position
-                print("randomPos: ", randomPos)
                 unmarkedPos = [int(randomPos[0]), int(randomPos[1])]
                 marked = gameBoard.markPosition(self.computer, unmarkedPos)  # mark that row,col in board with O
 
     def playerMark(self, player, pos: []):
         gameBoard = self.gameBoard
         marked = False
-        print("unmarkedposition: ", self.gameBoard.unmarkedPositions)
 
         if len(self.gameBoard.unmarkedPositions) == 0:  # no more unmarked positions
             return
@@ -158,7 +150,6 @@ class TicTacToe:
         diagnol2_pattern = ""
         col = 0  # start from last row, col 0
         for row in range(num_rows-1, -1, -1): # checks the positive slope diagnol
-            print(f"[{row}, {col}]")
             diagnol2_pattern = diagnol2_pattern + self.gameBoard.grid[row][col] # the negative pattern
             col = col + 1
 
