@@ -79,23 +79,20 @@ class TicTacToeUI(QMainWindow):
                 grid3x3Layout.setSpacing(20)
         self.grid3x3Widget.setLayout(grid3x3Layout)
 
-
     def _create4x4Grid(self):
         grid4x4Layout = QGridLayout()
         self.grid4x4Widget = QWidget()
         self.buttons4x4 = {}
         for row in range(4):
             for col in range(4):
-                button = QPushButton()  # f"{row}{col}"
+                button = QPushButton()
                 button.setFixedSize(120, 120)
                 button.setFont(QFont("Times", 90, QFont.Bold))
                 button.setStyleSheet("QPushButton {background-color: pink}")
 
                 self.buttons4x4[f"{row}{col}"] = button
                 grid4x4Layout.addWidget(button, row, col)
-                # grid4x4Layout.setSpacing(10)
         self.grid4x4Widget.setLayout(grid4x4Layout)
-
 
     def _createScoreBoard(self):
         self.rightLayout = QVBoxLayout()
@@ -129,8 +126,6 @@ class TicTacToeUI(QMainWindow):
         self._createnewGameButton()
         self.rightWidget.setLayout(self.rightLayout)
         self.game_with_score_board.addWidget(self.rightWidget)
-
-
 
         self.mainLayout.addLayout(self.game_with_score_board)
 
