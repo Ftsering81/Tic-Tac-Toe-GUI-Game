@@ -1,4 +1,4 @@
-# python-project1
+# Tic Tac Toe GUI
 
 ### Description:
 A Tic Tac Toe GUI game designed using the python library PyQT5 where player can switch between 3x3 and 4x4 grids for the game. 
